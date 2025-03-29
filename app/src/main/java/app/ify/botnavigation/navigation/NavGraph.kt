@@ -3,8 +3,10 @@ package app.ify.botnavigation.navigation
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import app.ify.botnavigation.screens.HomeScreen
 import app.ify.botnavigation.screens.ProfileScreen
 import app.ify.botnavigation.screens.SettingsScreen
@@ -45,7 +47,7 @@ fun addHomeScreen(navController: NavHostController,
        HomeScreen(navigateToProfile = {
            id, showDetails ->
            navController.navigate(
-               NavRoute.Profile.path.plus(id.toString()).plus(showDetails.toString())
+               NavRoute.Profile.path.plus("/$id/$showDetails")
            )
        },
        navigateToSettings = {
@@ -58,7 +60,17 @@ fun addHomeScreen(navController: NavHostController,
 fun addProfileScreen(navController: NavHostController,
                   navGraphBuilder: NavGraphBuilder) {
     navGraphBuilder.composable(
-       route = NavRoute.Profile.path.plus("/id/showDetails")
+       route = NavRoute.Profile.path.plus("/{id}/{showDetails}"),
+
+        arguments = listOf(
+            navArgument (NavRoute.Profile.id){
+                type = NavType.IntType
+            },
+            navArgument(NavRoute.Profile.showDetails) {
+                type = NavType.BoolType
+            }
+        )
+
     ){
         navBackStackEntry ->
         val args = navBackStackEntry.arguments
@@ -72,7 +84,7 @@ fun addProfileScreen(navController: NavHostController,
 }
 fun addSettingsScreen(navController: NavHostController,
                       navGraphBuilder: NavGraphBuilder){
-     navGraphBuilder.composable (route = NavRoute.Home.path){
+     navGraphBuilder.composable (route = NavRoute.Settings.path){
          SettingsScreen (navigateToHome = {navController.navigate(NavRoute.Home.path)})
      }
 }
