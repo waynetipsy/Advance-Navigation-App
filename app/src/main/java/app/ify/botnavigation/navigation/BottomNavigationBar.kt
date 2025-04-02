@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
@@ -18,8 +19,19 @@ fun BottomNavigationBar(navController: NavController) {
     val navItems = listOf(NavItem.Home, NavItem.Profile, NavItem.Settings)
 
      //2- Create a state variable that persists across recompositions
-    var selectedItem by rememberSaveable {
-        mutableStateOf(0)
+
+    // Synchronization between NavigationBar and Current Screen
+
+    //3- Observing the current back stack entry
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+
+    //4=- Current Route
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    //2- Create a state variable that persists across recompositions
+    var selectedItem = navItems.indexOfFirst { it.path == currentRoute }
+    var selectedNavItem by rememberSaveable {
+        mutableStateOf(if (selectedItem >= 0) selectedItem else 0)
     }
 
     // 3- Navigation Bar
@@ -28,8 +40,17 @@ fun BottomNavigationBar(navController: NavController) {
            NavigationBarItem(
                selected = selectedItem == index,
                onClick = {
-                   selectedItem = index
-                   navController.navigate(item.path) {
+                   selectedNavItem = index
+
+                   // Handling the navigation to the profile screen
+                   //Passing argument between the screens
+                   val route = if (item.path == NavRoute.Profile.path){
+                       NavRoute.Profile.path.plus("/123/true")
+                   }else {
+                       item.path
+                   }
+
+                   navController.navigate(route) {
                        navController.graph.startDestinationRoute?.let { route ->
                            popUpTo(route) {
                                saveState = true

@@ -47,7 +47,7 @@ fun addHomeScreen(navController: NavHostController,
        HomeScreen(navigateToProfile = {
            id, showDetails ->
            navController.navigate(
-               NavRoute.Profile.path.plus("/$id/$showDetails")
+               NavRoute.Profile.createRoute(88, false)
            )
        },
        navigateToSettings = {
@@ -63,10 +63,10 @@ fun addProfileScreen(navController: NavHostController,
        route = NavRoute.Profile.path.plus("/{id}/{showDetails}"),
 
         arguments = listOf(
-            navArgument (NavRoute.Profile.id){
+            navArgument ("id"){
                 type = NavType.IntType
             },
-            navArgument(NavRoute.Profile.showDetails) {
+            navArgument("showDetails"  ) {
                 type = NavType.BoolType
             }
         )
@@ -75,8 +75,8 @@ fun addProfileScreen(navController: NavHostController,
         navBackStackEntry ->
         val args = navBackStackEntry.arguments
 
-        ProfileScreen(id = args?.getInt(NavRoute.Profile.id)!!,
-            showDetails = args.getBoolean(NavRoute.Profile.showDetails),
+        ProfileScreen(id = args?.getInt("id")!!,
+            showDetails = args.getBoolean("showDetails"),
             navigateToSettings = { navController.navigate(NavRoute.Settings.path)}
 
         )
